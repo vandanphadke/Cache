@@ -62,8 +62,6 @@ module register32bit(
 	D_ff d_ff30(clk, reset, regWrite, decOut1b ,writeData[30], outR[30]);
 	D_ff d_ff31(clk, reset, regWrite, decOut1b ,writeData[31], outR[31]);
 	
-endmodule
-	
 
 module register26bit( 
 	input clk, 
@@ -99,8 +97,6 @@ module register26bit(
 	D_ff dff23(clk, reset, regWrite, decOut1b ,writeData[23], outR[23]);
 	D_ff dff24(clk, reset, regWrite, decOut1b ,writeData[24], outR[24]);
 	D_ff dff25(clk, reset, regWrite, decOut1b ,writeData[25], outR[25]);
-	
-endmodule
 
 
 module tag_array(
@@ -120,8 +116,6 @@ module tag_array(
 	register26bit R5(clk, reset, regWrite, decOut1b, tag_in5, tag_out5 );
 	register26bit R6(clk, reset, regWrite, decOut1b, tag_in6, tag_out6 );
 	register26bit R7(clk, reset, regWrite, decOut1b, tag_in7, tag_out7 );
-	
-endmodule
 
 	
 	
@@ -143,8 +137,6 @@ module block_array(
 	register32bit r5(clk, reset, regWrite, decOut1b, block_in5, block_out5 );
 	register32bit r6(clk, reset, regWrite, decOut1b, block_in6, block_out6 );
 	register32bit r7(clk, reset, regWrite, decOut1b, block_in7, block_out7 );
-	
-endmodule
 
 module valid_bit_array(
 	input clk, 
@@ -163,8 +155,6 @@ module valid_bit_array(
 	D_ff valid5(clk, reset, regWrite, decOut1b ,valid_in5, valid_out5);
 	D_ff valid6(clk, reset, regWrite, decOut1b ,valid_in6, valid_out6);
 	D_ff valid7(clk, reset, regWrite, decOut1b ,valid_in7, valid_out7);
-	
-endmodule
 	
 
 module dirty_bit_array(
@@ -185,4 +175,5 @@ module dirty_bit_array(
 	D_ff dirty6(clk, reset, regWrite, decOut1b ,dirty_in6, dirty_out6);
 	D_ff dirty7(clk, reset, regWrite, decOut1b ,dirty_in7, dirty_out7);
 
-endmodule
+
+
