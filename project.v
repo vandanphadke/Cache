@@ -19,8 +19,6 @@ module D_ff(
 endmodule
 
 
-
-
 module register32bit( 
 	input clk, 
 	input reset, 
@@ -185,4 +183,78 @@ module dirty_bit_array(
 	D_ff dirty6(clk, reset, regWrite, decOut1b ,dirty_in6, dirty_out6);
 	D_ff dirty7(clk, reset, regWrite, decOut1b ,dirty_in7, dirty_out7);
 
+endmodule
+
+module D_ff_Halt( 
+	input clk, 
+	input reset, 
+	input regWrite,  
+	input d, 
+	output reg q);
+	
+	always @ (negedge clk)
+		begin
+			if(reset==1)
+				q=0;
+			else
+				if(regWrite == 1)
+					begin
+						q=d;
+					end
+		end
+endmodule
+
+module register4bit( 
+	input clk, 
+	input reset, 
+	input regWrite, 
+	input [3:0] writeData,
+	output [3:0] RegOut );
+	
+	D_ff_Halt d_ffh0(clk, reset, regWrite, writeData[0], RegOut[0]);
+	D_ff_Halt d_ffh1(clk, reset, regWrite, writeData[1], RegOut[1]);
+	D_ff_Halt d_ffh2(clk, reset, regWrite, writeData[2], RegOut[2]);
+	D_ff_Halt d_ffh3(clk, reset, regWrite, writeData[3], RegOut[3]);
+	
+endmodule
+
+module halt_tag_array(
+	input clk, 
+	input reset, 
+	input regWrite,  
+	input [7:0] halt_tag_in0, halt_tag_in1, halt_tag_in2, halt_tag_in3, halt_tag_in4, halt_tag_in5, halt_tag_in6, halt_tag_in7,
+	output [7:0] halt_tag_out0, halt_tag_out1, halt_tag_out2, halt_tag_out3, halt_tag_out4, halt_tag_out5, halt_tag_out6, halt_tag_out7
+ 	);
+	
+	register4bit R0(clk, reset, regWrite, halt_tag_in0, halt_tag_out0 );
+	register4bit R1(clk, reset, regWrite, halt_tag_in1, halt_tag_out1 );
+	register4bit R2(clk, reset, regWrite, halt_tag_in2, halt_tag_out2 );
+	register4bit R3(clk, reset, regWrite, halt_tag_in3, halt_tag_out3 );
+	register4bit R4(clk, reset, regWrite, halt_tag_in4, halt_tag_out4 );
+	register4bit R5(clk, reset, regWrite, halt_tag_in5, halt_tag_out5 );
+	register4bit R6(clk, reset, regWrite, halt_tag_in6, halt_tag_out6 );
+	register4bit R7(clk, reset, regWrite, halt_tag_in7, halt_tag_out7 );
+	
+endmodule
+
+module comparator(input [3:0] in1, input [3:0] in2,output reg compOut);
+  
+  always@(in1, in2) 
+    begin
+      if(in1 == in2)  compOut = 1 ; 
+      
+      else            compOut = 0 ;        
+    end
+
+endmodule
+
+
+module way_halting(input clk, input reset, input[3:0] tag, output way_halt_input);
+  
+  halt_tag_array arrayhalt(clk, reset, 
+	input regWrite,  
+	input [7:0] halt_tag_in0, halt_tag_in1, halt_tag_in2, halt_tag_in3, halt_tag_in4, halt_tag_in5, halt_tag_in6, halt_tag_in7,
+	output [7:0] halt_tag_out0, halt_tag_out1, halt_tag_out2, halt_tag_out3, halt_tag_out4, halt_tag_out5, halt_tag_out6, halt_tag_out7
+ 	);
+  
 endmodule
