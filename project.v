@@ -131,8 +131,8 @@ module block_array(
 	input reset, 
 	input regWrite, 
 	input decOut1b, 
-	input [31:0] block_in0, block_in1, block_in2, block_in3, block_in4, block_in5, block_in6, block_in7,
-	output [31:0] block_out0, block_out1, block_out2, block_out3, block_out4, block_out5, block_out6, block_out7
+	input [7:0] block_in0, block_in1, block_in2, block_in3, block_in4, block_in5, block_in6, block_in7,
+	output [7:0] block_out0, block_out1, block_out2, block_out3, block_out4, block_out5, block_out6, block_out7
 	);
 	
 	register32bit r0(clk, reset, regWrite, decOut1b, block_in0, block_out0 );
