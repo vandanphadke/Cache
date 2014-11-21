@@ -63,6 +63,27 @@ module register32bit(
 	D_ff d_ff31(clk, reset, regWrite, decOut1b ,writeData[31], outR[31]);
 	
 endmodule
+
+module register32bit( 
+	input clk, 
+	input reset, 
+	input regWrite, 
+	input decOut1b, 
+	input [7:0] writeData,
+	output [7:0] outR );
+	
+	D_ff d_ff0(clk, reset, regWrite, decOut1b ,writeData[0], outR[0]);
+	D_ff d_ff1(clk, reset, regWrite, decOut1b ,writeData[1], outR[1]);
+	D_ff d_ff2(clk, reset, regWrite, decOut1b ,writeData[2], outR[2]);
+	D_ff d_ff3(clk, reset, regWrite, decOut1b ,writeData[3], outR[3]);
+	D_ff d_ff4(clk, reset, regWrite, decOut1b ,writeData[4], outR[4]);
+	D_ff d_ff5(clk, reset, regWrite, decOut1b ,writeData[5], outR[5]);
+	D_ff d_ff6(clk, reset, regWrite, decOut1b ,writeData[6], outR[6]);
+	D_ff d_ff7(clk, reset, regWrite, decOut1b ,writeData[7], outR[7]);
+	
+	
+	
+endmodule
 	
 
 module register26bit( 
@@ -135,14 +156,14 @@ module block_array(
 	output [7:0] block_out0, block_out1, block_out2, block_out3, block_out4, block_out5, block_out6, block_out7
 	);
 	
-	register32bit r0(clk, reset, regWrite, decOut1b, block_in0, block_out0 );
-	register32bit r1(clk, reset, regWrite, decOut1b, block_in1, block_out1 );
-	register32bit r2(clk, reset, regWrite, decOut1b, block_in2, block_out2 );
-	register32bit r3(clk, reset, regWrite, decOut1b, block_in3, block_out3 );
-	register32bit r4(clk, reset, regWrite, decOut1b, block_in4, block_out4 );
-	register32bit r5(clk, reset, regWrite, decOut1b, block_in5, block_out5 );
-	register32bit r6(clk, reset, regWrite, decOut1b, block_in6, block_out6 );
-	register32bit r7(clk, reset, regWrite, decOut1b, block_in7, block_out7 );
+	register8bit r0(clk, reset, regWrite, decOut1b, block_in0, block_out0 );
+	register8bit r1(clk, reset, regWrite, decOut1b, block_in1, block_out1 );
+	register8bit r2(clk, reset, regWrite, decOut1b, block_in2, block_out2 );
+	register8bit r3(clk, reset, regWrite, decOut1b, block_in3, block_out3 );
+	register8bit r4(clk, reset, regWrite, decOut1b, block_in4, block_out4 );
+	register8bit r5(clk, reset, regWrite, decOut1b, block_in5, block_out5 );
+	register8bit r6(clk, reset, regWrite, decOut1b, block_in6, block_out6 );
+	register8bit r7(clk, reset, regWrite, decOut1b, block_in7, block_out7 );
 	
 endmodule
 
@@ -167,22 +188,3 @@ module valid_bit_array(
 endmodule
 	
 
-module dirty_bit_array(
-	input clk, 
-	input reset, 
-	input regWrite, 
-	input decOut1b, 
-	input dirty_in0, dirty_in1, dirty_in2, dirty_in3, dirty_in4, dirty_in5, dirty_in6, dirty_in7,
-	output dirty_out0, dirty_out1, dirty_out2, dirty_out3, dirty_out4, dirty_out5, dirty_out6, dirty_out7
-	);
-	
-	D_ff dirty0(clk, reset, regWrite, decOut1b ,dirty_in0, dirty_out0);
-	D_ff dirty1(clk, reset, regWrite, decOut1b ,dirty_in1, dirty_out1);
-	D_ff dirty2(clk, reset, regWrite, decOut1b ,dirty_in2, dirty_out2);
-	D_ff dirty3(clk, reset, regWrite, decOut1b ,dirty_in3, dirty_out3);
-	D_ff dirty4(clk, reset, regWrite, decOut1b ,dirty_in4, dirty_out4);
-	D_ff dirty5(clk, reset, regWrite, decOut1b ,dirty_in5, dirty_out5);
-	D_ff dirty6(clk, reset, regWrite, decOut1b ,dirty_in6, dirty_out6);
-	D_ff dirty7(clk, reset, regWrite, decOut1b ,dirty_in7, dirty_out7);
-
-endmodule
