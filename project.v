@@ -169,7 +169,7 @@ module dirty_bit_array(
 	input clk, 
 	input reset, 
 	input regWrite, 
-	input decOut1b, 
+	input decOut1b,
 	input dirty_in0, dirty_in1, dirty_in2, dirty_in3, dirty_in4, dirty_in5, dirty_in6, dirty_in7,
 	output dirty_out0, dirty_out1, dirty_out2, dirty_out3, dirty_out4, dirty_out5, dirty_out6, dirty_out7
 	);
@@ -221,23 +221,23 @@ endmodule
 module halt_tag_array(
 	input clk, 
 	input reset, 
-	input regWrite,  
-	input [7:0] halt_tag_in0, halt_tag_in1, halt_tag_in2, halt_tag_in3, halt_tag_in4, halt_tag_in5, halt_tag_in6, halt_tag_in7,
-	output [7:0] halt_tag_out0, halt_tag_out1, halt_tag_out2, halt_tag_out3, halt_tag_out4, halt_tag_out5, halt_tag_out6, halt_tag_out7
+	input [7:0] write_enable,  
+	input [3:0] halt_tag_in,
+	output[3:0] halt_tag_out0, halt_tag_out1, halt_tag_out2, halt_tag_out3, halt_tag_out4, halt_tag_out5, halt_tag_out6, halt_tag_out7
  	);
 	
-	register4bit R0(clk, reset, regWrite, halt_tag_in0, halt_tag_out0 );
-	register4bit R1(clk, reset, regWrite, halt_tag_in1, halt_tag_out1 );
-	register4bit R2(clk, reset, regWrite, halt_tag_in2, halt_tag_out2 );
-	register4bit R3(clk, reset, regWrite, halt_tag_in3, halt_tag_out3 );
-	register4bit R4(clk, reset, regWrite, halt_tag_in4, halt_tag_out4 );
-	register4bit R5(clk, reset, regWrite, halt_tag_in5, halt_tag_out5 );
-	register4bit R6(clk, reset, regWrite, halt_tag_in6, halt_tag_out6 );
-	register4bit R7(clk, reset, regWrite, halt_tag_in7, halt_tag_out7 );
+	register4bit R0(clk, reset, write_enable[0], halt_tag_in, halt_tag_out0 );
+	register4bit R1(clk, reset, write_enable[1], halt_tag_in, halt_tag_out1 );
+	register4bit R2(clk, reset, write_enable[2], halt_tag_in, halt_tag_out2 );
+	register4bit R3(clk, reset, write_enable[3], halt_tag_in, halt_tag_out3 );
+	register4bit R4(clk, reset, write_enable[4], halt_tag_in, halt_tag_out4 );
+	register4bit R5(clk, reset, write_enable[5], halt_tag_in, halt_tag_out5 );
+	register4bit R6(clk, reset, write_enable[6], halt_tag_in, halt_tag_out6 );
+	register4bit R7(clk, reset, write_enable[7], halt_tag_in, halt_tag_out7 );
 	
 endmodule
 
-module comparator(input [3:0] in1, input [3:0] in2,output reg compOut);
+module comparator4bit(input [3:0] in1, input [3:0] in2,output reg compOut);
   
   always@(in1, in2) 
     begin
@@ -245,16 +245,48 @@ module comparator(input [3:0] in1, input [3:0] in2,output reg compOut);
       
       else            compOut = 0 ;        
     end
+    
+endmodule
 
+module mux8to1_1bit(input in1, in2, in3, in4, in5, in6, in7, in8, input [2:0] sel, output reg muxOut );
+  always@(in1, in2, in3, in4, in5, in6, in7, in8, sel)
+    begin
+      case(sel)
+        3'b000 : muxOut = in1 ;
+        3'b001 : muxOut = in2 ;
+        3'b010 : muxOut = in3 ;
+        3'b011 : muxOut = in4 ;
+        3'b100 : muxOut = in5 ;
+        3'b101 : muxOut = in6 ;
+        3'b110 : muxOut = in7 ;
+        3'b111 : muxOut = in8 ;
+      endcase  
+    end  
 endmodule
 
 
-module way_halting(input clk, input reset, input[3:0] tag, output way_halt_input);
+module way_halting(input clk, 
+                   input reset,
+                   input[7:0] we,
+                   input[3:0] halt_tag_write,  
+                   input[3:0] tag, 
+                   output halt_flag0, halt_flag1, halt_flag2, halt_flag3, halt_flag4, halt_flag5, halt_flag6, halt_flag7
+                   );
+                  
+  wire[3:0] halt_regOut0, halt_regOut1, halt_regOut2, halt_regOut3, halt_regOut4, 
+            halt_regOut5, halt_regOut6, halt_regOut7; 
   
-  halt_tag_array arrayhalt(clk, reset, 
-	input regWrite,  
-	input [7:0] halt_tag_in0, halt_tag_in1, halt_tag_in2, halt_tag_in3, halt_tag_in4, halt_tag_in5, halt_tag_in6, halt_tag_in7,
-	output [7:0] halt_tag_out0, halt_tag_out1, halt_tag_out2, halt_tag_out3, halt_tag_out4, halt_tag_out5, halt_tag_out6, halt_tag_out7
- 	);
+  halt_tag_array array_halt(clk, reset, we, halt_tag_write, halt_regOut0, halt_regOut1, halt_regOut2, halt_regOut3, 
+                              halt_regOut4, halt_regOut5, halt_regOut6, halt_regOut7);
+                              
+  comparator4bit comp1(tag, halt_regOut0, halt_flag0);
+  comparator4bit comp2(tag, halt_regOut1, halt_flag1);
+  comparator4bit comp3(tag, halt_regOut2, halt_flag2);
+  comparator4bit comp4(tag, halt_regOut3, halt_flag3);
+  comparator4bit comp5(tag, halt_regOut4, halt_flag4);
+  comparator4bit comp6(tag, halt_regOut5, halt_flag5);
+  comparator4bit comp7(tag, halt_regOut6, halt_flag6);
+  comparator4bit comp8(tag, halt_regOut7, halt_flag7);
+  
   
 endmodule
