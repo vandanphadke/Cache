@@ -394,7 +394,7 @@ module wr_enable_signals(input [7:0]set_arr, input [2:0]way, input hit, input re
 endmodule
 
 
-module way(input clk, reset, input [7:0] decOut, input[21:0] tag_in0, input[63:0] data_in0, input [2:0] index, output valid_out_mux,output [21:0] tag_out_mux, output [63:0] data_out_mux); 
+module way(input clk, reset, input [7:0] decOut,input[21:0] tag_in0, input[63:0] data_in0, input [2:0] index, output valid_out_mux,output [21:0] tag_out_mux, output [63:0] data_out_mux); 
    begin 
       wire valid_out1,valid_out2,valid_out3,valid_out4,valid_out5,valid_out6,valid_out7; 
       wire [21:0] tag_out0, tag_out1, tag_out2, tag_out3, tag_out4, tag_out5, tag_out6, tag_out7;
@@ -404,7 +404,7 @@ module way(input clk, reset, input [7:0] decOut, input[21:0] tag_in0, input[63:0
       tag_array tagArray(clk,reset, decOut, tag_in0, tag_out0, tag_out1, tag_out2, tag_out3, tag_out4, tag_out5, tag_out6, tag_out7);
 	    data_array dataArray(clk,reset,decOut,data_in0,out0,out1,out2,out3,out4,out5,out6,out7);
 	    
-	    mux8to1_1b mux_valid(vali_out0, valid_out1,valid_out2,valid_out3,valid_out4,valid_out5,valid_out6,valid_out7,index,valid_out_mux);
+	    mux8to1_1b mux_valid(valid_out0, valid_out1,valid_out2,valid_out3,valid_out4,valid_out5,valid_out6,valid_out7,index,valid_out_mux);
 	    mux8to1_22b mux_tag(tag_out0, tag_out1, tag_out2, tag_out3, tag_out4, tag_out5, tag_out6, tag_out7,index,tag_out_mux);
 	    mux8to1_64b mux_data(out0,out1,out2,out3,out4,out5,out6,out7,index,data_out_mux);
 	 
