@@ -89,6 +89,104 @@ module register22bit(
 	
 endmodule
 
+module register32bit( 
+	input clk, 
+	input reset, 
+	input regWrite, 
+	input [31:0] writeData,
+	output [31:0] outR );
+	
+	D_ff d_ff0(clk, reset, regWrite, writeData[0], outR[0]);
+	D_ff d_ff1(clk, reset, regWrite, writeData[1], outR[1]);
+	D_ff d_ff2(clk, reset, regWrite, writeData[2], outR[2]);
+	D_ff d_ff3(clk, reset, regWrite, writeData[3], outR[3]);
+	D_ff d_ff4(clk, reset, regWrite, writeData[4], outR[4]);
+	D_ff d_ff5(clk, reset, regWrite, writeData[5], outR[5]);
+	D_ff d_ff6(clk, reset, regWrite, writeData[6], outR[6]);
+	D_ff d_ff7(clk, reset, regWrite, writeData[7], outR[7]);
+	D_ff d_ff8(clk, reset, regWrite, writeData[8], outR[8]);
+	D_ff d_ff9(clk, reset, regWrite, writeData[9], outR[9]);
+	D_ff d_ff10(clk, reset, regWrite, writeData[10], outR[10]);
+	D_ff d_ff11(clk, reset, regWrite, writeData[11], outR[11]);
+	D_ff d_ff12(clk, reset, regWrite, writeData[12], outR[12]);
+	D_ff d_ff13(clk, reset, regWrite, writeData[13], outR[13]);
+	D_ff d_ff14(clk, reset, regWrite, writeData[14], outR[14]);
+	D_ff d_ff15(clk, reset, regWrite, writeData[15], outR[15]);
+	D_ff d_ff16(clk, reset, regWrite, writeData[16], outR[16]);
+	D_ff d_ff17(clk, reset, regWrite, writeData[17], outR[17]);
+	D_ff d_ff18(clk, reset, regWrite, writeData[18], outR[18]);
+	D_ff d_ff19(clk, reset, regWrite, writeData[19], outR[19]);
+	D_ff d_ff20(clk, reset, regWrite, writeData[20], outR[20]);
+	D_ff d_ff21(clk, reset, regWrite, writeData[21], outR[21]);
+	D_ff d_ff22(clk, reset, regWrite, writeData[22], outR[22]);
+	D_ff d_ff23(clk, reset, regWrite, writeData[23], outR[23]);
+	D_ff d_ff24(clk, reset, regWrite, writeData[24], outR[24]);
+	D_ff d_ff25(clk, reset, regWrite, writeData[25], outR[25]);
+	D_ff d_ff26(clk, reset, regWrite, writeData[26], outR[26]);
+	D_ff d_ff27(clk, reset, regWrite, writeData[27], outR[27]);
+	D_ff d_ff28(clk, reset, regWrite, writeData[28], outR[28]);
+	D_ff d_ff29(clk, reset, regWrite, writeData[29], outR[29]);
+	D_ff d_ff30(clk, reset, regWrite, writeData[30], outR[30]);
+	D_ff d_ff31(clk, reset, regWrite, writeData[31], outR[31]);
+	
+endmodule
+
+module register94bit( 
+	input clk, 
+	input reset, 
+	input regWrite, 
+	input [92:0] writeData,
+	output [92:0] outR );
+	
+	
+	register32bit R0(clk, reset, regWrite, writeData[31:0],outR[31:0] );
+	register32bit R1(clk, reset, regWrite, writeData[63:32],outR[63:32] );
+	register29bit R2(clk, reset, regWrite, writeData[92:64], outR[92:64] );
+	
+	
+	
+endmodule
+
+module register29bit( 
+	input clk, 
+	input reset, 
+	input regWrite, 
+	input [28:0] writeData,
+	output [28:0] outR );
+	
+	D_ff d_ff0(clk, reset, regWrite, writeData[0], outR[0]);
+	D_ff d_ff1(clk, reset, regWrite, writeData[1], outR[1]);
+	D_ff d_ff2(clk, reset, regWrite, writeData[2], outR[2]);
+	D_ff d_ff3(clk, reset, regWrite, writeData[3], outR[3]);
+	D_ff d_ff4(clk, reset, regWrite, writeData[4], outR[4]);
+	D_ff d_ff5(clk, reset, regWrite, writeData[5], outR[5]);
+	D_ff d_ff6(clk, reset, regWrite, writeData[6], outR[6]);
+	D_ff d_ff7(clk, reset, regWrite, writeData[7], outR[7]);
+	D_ff d_ff8(clk, reset, regWrite, writeData[8], outR[8]);
+	D_ff d_ff9(clk, reset, regWrite, writeData[9], outR[9]);
+	D_ff d_ff10(clk, reset, regWrite, writeData[10], outR[10]);
+	D_ff d_ff11(clk, reset, regWrite, writeData[11], outR[11]);
+	D_ff d_ff12(clk, reset, regWrite, writeData[12], outR[12]);
+	D_ff d_ff13(clk, reset, regWrite, writeData[13], outR[13]);
+	D_ff d_ff14(clk, reset, regWrite, writeData[14], outR[14]);
+	D_ff d_ff15(clk, reset, regWrite, writeData[15], outR[15]);
+	D_ff d_ff16(clk, reset, regWrite, writeData[16], outR[16]);
+	D_ff d_ff17(clk, reset, regWrite, writeData[17], outR[17]);
+	D_ff d_ff18(clk, reset, regWrite, writeData[18], outR[18]);
+	D_ff d_ff19(clk, reset, regWrite, writeData[19], outR[19]);
+	D_ff d_ff20(clk, reset, regWrite, writeData[20], outR[20]);
+	D_ff d_ff21(clk, reset, regWrite, writeData[21], outR[21]);
+	D_ff d_ff22(clk, reset, regWrite, writeData[22], outR[22]);
+	D_ff d_ff23(clk, reset, regWrite, writeData[23], outR[23]);
+	D_ff d_ff24(clk, reset, regWrite, writeData[24], outR[24]);
+	D_ff d_ff25(clk, reset, regWrite, writeData[25], outR[25]);
+	D_ff d_ff26(clk, reset, regWrite, writeData[26], outR[26]);
+	D_ff d_ff27(clk, reset, regWrite, writeData[27], outR[27]);
+	D_ff d_ff28(clk, reset, regWrite, writeData[28], outR[28]);
+	
+	
+endmodule
+
 module tag_array(
 	input clk, 
 	input reset,   
@@ -292,6 +390,26 @@ module mux8to1_64b( input [63:0] in0,in1,in2,in3,in4,in5,in6,in7, input [2:0] Se
       3'b110: data_out=in6;
       3'b111: data_out=in7;
   endcase
+endmodule
+
+module mux8to1_94b(
+	input [2:0] sel,
+	input [92:0] block0, block1, block2, block3, block4, block5, block6, block7,
+	output reg [92:0] out
+	);
+	
+	always@(sel)
+		case(sel)
+			3'b000 : out = block0;
+			3'b001 : out = block1;
+			3'b010 : out = block2;
+			3'b011 : out = block3;
+			3'b100 : out = block4;
+			3'b101 : out = block5;
+			3'b110 : out = block6;
+			3'b111 : out = block7;
+		endcase	
+	
 endmodule
 
 module comparator_4bit(input [3:0] in1, input [3:0] in2,output reg compOut);
@@ -604,12 +722,12 @@ module encoder(input [7:0] e, output reg [2:0] way);
   end
 endmodule  
 
-module data_read(input [7:0] e, input hit, input [2:0]offset, input [63:0] data0, input [63:0] data1, input [63:0] data2, input [63:0] data3, input [63:0] data4, input [63:0] data5, input [63:0] data6, input [63:0] data7, output [2:0] line_index, output [7:0] out_data);
-  wire [63:0] mux1_out;
+module data_read(input [7:0] e, input hit, input [2:0]offset, input [63:0] data0, input [63:0] data1, input [63:0] data2, input [63:0] data3, input [63:0] data4, input [63:0] data5, input [63:0] data6, input [63:0] data7, output [2:0] line_index, output [7:0] out_data, output[63:0] block_out);
+  //wire [63:0] mux1_out;
   encoder enc(e,line_index);
   
-  mux8to1_64b mux1(data0,data1,data2,data3,data4,data5,data6,data7,line_index,mux1_out);
-  mux8to1_8b mux2(mux1_out[7:0],mux1_out[15:8],mux1_out[23:16],mux1_out[31:24],mux1_out[39:32],mux1_out[47:40],mux1_out[55:48],mux1_out[63:56],offset,out_data);
+  mux8to1_64b mux1(data0,data1,data2,data3,data4,data5,data6,data7,line_index,block_out);
+  mux8to1_8b mux2(block_out[7:0],block_out[15:8],block_out[23:16],block_out[31:24],block_out[39:32],block_out[47:40],block_out[55:48],block_out[63:56],offset,out_data);
 
 endmodule
 
@@ -659,12 +777,81 @@ module check_invalid(input valid0, input valid1, input valid2, input valid3, inp
   end
 endmodule
 
-module topmodule(input clk,input reset,input [31:0]address,input read_signal,input write_signal,input [63:0]write_data,input [7:0] write_byte, output read_hit, output write_hit, output [7:0]read_data, output hit, output halt_hit);
+//************************Write Buffer Started*******************************************		
+
+module writeBuffer(
+	input clk,
+	input reset,
+	input readBit,
+	input writeBit,
+	input  [92:0] in_entry,
+	output [92:0] out_entry
+	);
+//in_entry/out_entry  format :>  tag(26 bits) + index (3 bit) + data_block(64 bits)	
+
+	reg [2:0]  readCounter, writeCounter;
+	wire [7:0]  decOut;
+	wire [92:0] out_entry0, out_entry1, out_entry2, out_entry3, out_entry4, out_entry5, out_entry6, out_entry7;
+  reg [7:0] valid_bit_array;
+  
+	
+	always@(negedge clk, reset, writeBit, readBit, in_entry)
+			
+		begin
+		  //Resets the whole buffer
+		  if (reset == 1)
+		    begin 
+		       readCounter = 3'd0;
+           writeCounter = 3'd0;
+           valid_bit_array = 8'd0; 
+                  
+        end
+	//*******************************************************************			
+			
+			//Writes to buffer	
+			if (writeBit == 1)
+				begin	
+				  valid_bit_array[writeCounter] = 1'b1;			
+					writeCounter = writeCounter + 3'b001;			
+				end		
+	//*******************************************************************						
+				
+			//Reads from buffer	
+			if (readBit == 1)
+				begin
+				  if (valid_bit_array[readCounter]==1)
+				      begin
+				          
+				            valid_bit_array[readCounter] = 1'b0;	
+					          readCounter = readCounter + 3'b001;
+					        
+					    end
+				end	
+	//*******************************************************************		
+		end	
+		
+		
+           decoder_3to8 dec_write(writeCounter, decOut);
+	
+	         register94bit entry0(clk, reset, decOut[0], in_entry, out_entry0 );
+	         register94bit entry1(clk, reset, decOut[1], in_entry, out_entry1 );
+	         register94bit entry2(clk, reset, decOut[2], in_entry, out_entry2 );
+	         register94bit entry3(clk, reset, decOut[3], in_entry, out_entry3 );
+	         register94bit entry4(clk, reset, decOut[4], in_entry, out_entry4 );
+	         register94bit entry5(clk, reset, decOut[5], in_entry, out_entry5 );
+	         register94bit entry6(clk, reset, decOut[6], in_entry, out_entry6 );
+	         register94bit entry7(clk, reset, decOut[7], in_entry, out_entry7 );
+	
+          	mux8to1_94b read_mux( readCounter, out_entry0, out_entry1, out_entry2, out_entry3, out_entry4, out_entry5, out_entry6, out_entry7,out_entry);			
+		
+endmodule
+
+module topmodule(input clk,input reset,input [31:0]address,input read_signal,input write_signal,input readBit,input [63:0]write_data,input [7:0] write_byte, output read_hit, output write_hit, output [7:0]read_data, output hit, output halt_hit, output[92:0] out_entry);
   
   wire[21:0] tag0,tag1,tag2,tag3,tag4,tag5,tag6,tag7;
   wire[7:0] decOut,way0_sig,way1_sig,way2_sig,way3_sig,way4_sig,way5_sig,way6_sig,way7_sig;
   wire[2:0] LRU_Way,invalid_way,out1,line_index,final_way;
-  wire[63:0] data0,data1,data2,data3,data4,data5,data6,data7;
+  wire[63:0] data0,data1,data2,data3,data4,data5,data6,data7, block_out;
   wire valid0,valid1,valid2,valid3,valid4,valid5,valid6,valid7,flag00, flag01, flag02,  flag03,  flag04,  flag05,  flag06,  flag07;
   wire flag10, flag11, flag12,  flag13,  flag14,  flag15,  flag16,  flag17,flag20, flag21, flag22,  flag23,  flag24,  flag25,  flag26,  flag27;
   wire flag30, flag31, flag32,  flag33,  flag34,  flag35,  flag36,  flag37,flag40, flag41, flag42,  flag43,  flag44,  flag45,  flag46,  flag47;
@@ -715,15 +902,17 @@ module topmodule(input clk,input reset,input [31:0]address,input read_signal,inp
    comparator_22b c7(tag6, address[31:10], flag6, compOut6);
    comparator_22b c8(tag7, address[31:10], flag7, compOut7);
    
+   writeBuffer writebuf(clk, reset, readBit, write_signal,{address[31:3], block_out}, out_entry);
+
+   
    assign hit = ((valid0&compOut0) | (valid1&compOut1) | (valid2&compOut2) | (valid3&compOut3) | (valid4&compOut4) | (valid5&compOut5) | (valid6&compOut6) | (valid7&compOut7));
    assign write_hit = hit & write_signal;
    assign read_hit = hit & read_signal;
    assign halt_hit = (halt_flag0 | halt_flag1 | halt_flag2 | halt_flag3 | halt_flag4 | halt_flag5 | halt_flag6 | halt_flag7);  
    
-   
    LRU_Square ls(line_index, out1, clk, reset, hit, LRU_Way); //A slight modification made in the usual implementation to consider the case when the recently placed block in case of a miss if an invalid block instead of what LRU_Square last chose.
    
-   data_read dr({(valid7&compOut7),(valid6&compOut6),(valid5&compOut5),(valid4&compOut4),(valid3&compOut3),(valid2&compOut2),(valid1&compOut1),(valid0&compOut0)}, hit, address[2:0], data0, data1, data2, data3, data4, data5, data6, data7, line_index, read_data);
+   data_read dr({(valid7&compOut7),(valid6&compOut6),(valid5&compOut5),(valid4&compOut4),(valid3&compOut3),(valid2&compOut2),(valid1&compOut1),(valid0&compOut0)}, hit, address[2:0], data0, data1, data2, data3, data4, data5, data6, data7, line_index, read_data, block_out);
    check_invalid chk(valid0, valid1, valid2, valid3, valid4, valid5, valid6, valid7, invalid_way, lru_invalid);
    
  endmodule
@@ -731,23 +920,24 @@ module topmodule(input clk,input reset,input [31:0]address,input read_signal,inp
  module testBenchCache;
    //Inputs to main module
    
-   reg clk, reset, read_signal, write_signal;
+   reg clk, reset, read_signal, write_signal, readBit;
    reg[31:0] address ; 
    reg[63:0] data ;
    reg[7:0] byte ;     
    
    //Outputs
    wire read_hit, write_hit , hit , halt_hit; 
-   wire [7:0] cacheOut ; 
+   wire [7:0] cacheOut ;
+   wire [92:0] buffer_out ;  
    
-   topmodule uut(clk, reset, address, read_signal, write_signal, data, byte ,  read_hit, write_hit, cacheOut, hit, halt_hit);
+   topmodule uut(clk, reset, address, read_signal,write_signal,readBit , data, byte ,  read_hit, write_hit, cacheOut, hit, halt_hit, buffer_out);
    
        always #5 clk = ~clk; 
   
   initial 
     begin
           //Clear everything
-          clk = 1'b1 ; reset = 1'b1 ; address = 32'd0 ; read_signal = 0 ; write_signal = 0 ; data = 64'd0 ; byte = 8'd0 ; 
+          clk = 1'b1 ; reset = 1'b1 ; address = 32'd0 ; read_signal = 0 ; write_signal = 0 ; data = 64'd0 ; byte = 8'd0 ; readBit = 1'b0 ;  
           
           //Read - miss , tag = 7 , index = 0 , data = 8246 , written to set0, way0
     #12   reset = 1'b0 ; address = 32'd448 ; read_signal = 1 ; write_signal = 0 ; data = 64'd8246 ;
@@ -756,7 +946,16 @@ module topmodule(input clk,input reset,input [31:0]address,input read_signal,inp
     #10   address = 32'd4104 ; read_signal = 1 ; write_signal = 0 ; data = 64'd1597 ;
     
           //Read - miss , tag = 31  , index = 7 , data =  7454 , written to set7, way0
-    #10   address = 32'd2040 ; read_signal = 1 ; write_signal = 0 ; data = 64'd7454 ;      
+    #10   address = 32'd2040 ; read_signal = 1 ; write_signal = 0 ; data = 64'd7454 ;
+    
+          //Write - hit , tag = 31 , index = 7 , data = 789 overwritten to set7, way0
+    #10   address = 32'd2040 ; read_signal = 0 ; write_signal = 1 ; data = 64'd789 ; byte = 8'd85 ;
+    
+          //Write - miss , tag = 3 , index = 7 , data = 556 overwritten to set7, way1
+    #10   address = 32'd248 ; read_signal = 0 ; write_signal = 1 ; data = 64'd556 ; byte = 8'd00 ;
+    #10   address = 32'd248 ; read_signal = 0 ; write_signal = 1 ; data = 64'd556 ; byte = 8'd1 ;      
+          
+          readBit = 1'b1 ;
           
           //Read - hit , tag = 7    , index = 0 , data =  7454 , read by set7, way0
     #10   address = 32'd448 ; read_signal = 1 ; write_signal = 0 ; data = 64'd0 ;
