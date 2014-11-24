@@ -1,4 +1,6 @@
-module Buffer(
+//************************Write Buffer Started*******************************************		
+
+module writeBuffer(
 	input clk,
 	input reset,
 	input readBit,
@@ -12,31 +14,41 @@ module Buffer(
 	wire [7:0]  decOut;
 	wire [92:0] out_entry0, out_entry1, out_entry2, out_entry3, out_entry4, out_entry5, out_entry6, out_entry7;
   reg [7:0] valid_bit_array;
+  
 	
 	always@(negedge clk, reset, writeBit, readBit, in_entry)
 			
 		begin
-		  
+		  //Resets the whole buffer
 		  if (reset == 1)
 		    begin 
 		       readCounter = 3'd0;
            writeCounter = 3'd0;
-           valid_bit_array = 8'd0;           
+           valid_bit_array = 8'd0; 
+                  
         end
-				
-			if (readBit == 1 && writeBit == 0)
-				begin
-				  valid_bit_array[readCounter] = 1'b0;	
-					readCounter = readCounter + 3'b001;
-					
-				end
-				
-			if (readBit == 0 && writeBit == 1)
+	//*******************************************************************			
+			
+			//Writes to buffer	
+			if (writeBit == 1)
 				begin	
 				  valid_bit_array[writeCounter] = 1'b1;			
 					writeCounter = writeCounter + 3'b001;			
-				end			
-			
+				end		
+	//*******************************************************************						
+				
+			//Reads from buffer	
+			if (readBit == 1)
+				begin
+				  if (valid_bit_array[readCounter]==1)
+				      begin
+				          
+				            valid_bit_array[readCounter] = 1'b0;	
+					          readCounter = readCounter + 3'b001;
+					        
+					    end
+				end	
+	//*******************************************************************		
 		end	
 		
 		
@@ -55,6 +67,7 @@ module Buffer(
 		
 endmodule
 
+//*******************************************************************		
 
 module register94bit( 
 	input clk, 
@@ -71,6 +84,8 @@ module register94bit(
 	
 	
 endmodule
+
+//*******************************************************************		
 	
 module decoder(
 	input [2:0]in,
@@ -90,6 +105,8 @@ module decoder(
 	endcase
 	
 endmodule
+
+//*******************************************************************		
 	
 module mux_8_to_1(
 	input [2:0] sel,
@@ -110,6 +127,9 @@ module mux_8_to_1(
 		endcase	
 	
 endmodule
+
+//*******************************************************************		
+
 
 
 module D_ff( 
@@ -132,7 +152,7 @@ module D_ff(
 endmodule
 
 
-
+//*******************************************************************		
 
 module register32bit( 
 	input clk, 
@@ -176,6 +196,7 @@ module register32bit(
 	
 endmodule
 
+//*******************************************************************		
 
 module register29bit( 
 	input clk, 
@@ -216,3 +237,5 @@ module register29bit(
 	
 	
 endmodule
+
+//********************Write Buffer Completed  **********************************************		
