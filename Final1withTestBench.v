@@ -237,7 +237,7 @@ module mux8to1_8b( input[7:0] valid_in0, valid_in1, valid_in2, valid_in3, valid_
   endcase
 endmodule
  
- module mux8to1_22b( input [21:0] tag_in0, tag_in1, tag_in2, tag_in3, tag_in4, tag_in5, tag_in6, tag_in7, input [2:0] Sel, output reg [21:0] tag_out );
+module mux8to1_22b( input [21:0] tag_in0, tag_in1, tag_in2, tag_in3, tag_in4, tag_in5, tag_in6, tag_in7, input [2:0] Sel, output reg [21:0] tag_out );
   always @(tag_in0, tag_in1, tag_in2, tag_in3, tag_in4, tag_in5, tag_in6, tag_in7,Sel)
     case(Sel)
       3'b000: tag_out=tag_in0;
@@ -317,7 +317,7 @@ endmodule
 module wr_enable_signals(input [7:0]set_arr, input [2:0]way, input hit, input read_signal, output [7:0] out1,out2,out3,out4,out5,out6,out7,out8);
   wire [7:0] way_arr;
   decoder_3to8 dec1(way,way_arr);
-  assign val = (~hit|(hit&(~read_signal)));
+  assign val = (~(hit & read_signal));
   
   assign out1[0] = way_arr[0] & val & set_arr[0];
   assign out1[1] = way_arr[0] & val & set_arr[1];
@@ -394,7 +394,7 @@ module wr_enable_signals(input [7:0]set_arr, input [2:0]way, input hit, input re
 endmodule
 
 
-module way(input clk, reset, input [7:0] decOut,input[21:0] tag_in0, input[63:0] data_in0, input [2:0] index, output valid_out_mux,output [21:0] tag_out_mux, output [63:0] data_out_mux); 
+module way(input clk, reset, input [7:0] decOut,input valid_in0, input[21:0] tag_in0, input[63:0] data_in0, input [2:0] index, output valid_out_mux,output [21:0] tag_out_mux, output [63:0] data_out_mux); 
    begin 
       wire valid_out1,valid_out2,valid_out3,valid_out4,valid_out5,valid_out6,valid_out7; 
       wire [21:0] tag_out0, tag_out1, tag_out2, tag_out3, tag_out4, tag_out5, tag_out6, tag_out7;
@@ -416,7 +416,8 @@ module way_halting(input clk,
                    input[7:0] we,
                    input[3:0] halt_tag_write,  
                    input[3:0] tag, 
-                   output halt_flag0, halt_flag1, halt_flag2, halt_flag3, halt_flag4, halt_flag5, halt_flag6, halt_flag7
+                   output halt_flag0, halt_flag1, halt_flag2, halt_flag3, halt_flag4, halt_flag5, halt_flag6, halt_flag7,
+                   output final_halt_flag
                    );
                   
   wire[3:0] halt_regOut0, halt_regOut1, halt_regOut2, halt_regOut3, halt_regOut4, 
@@ -434,6 +435,7 @@ module way_halting(input clk,
   comparator_4bit comp7(tag, halt_regOut6, halt_flag6);
   comparator_4bit comp8(tag, halt_regOut7, halt_flag7);
   
+  assign final_halt_flag = halt_flag0 | halt_flag1 | halt_flag2 | halt_flag3 | halt_flag4 | halt_flag5 | halt_flag6 | halt_flag7 ; 
 endmodule
 
 module NxN_DFFs(input clk, input reset, input [7:0] decOut, output [7:0] NxNOut);
@@ -549,7 +551,7 @@ endmodule
 module LRU_Square(input [2:0] LineIndex, input [2:0] input2, input clk, input reset, input Hit, output [2:0] LRUWay);
   wire[2:0] muxOut;
   wire[7:0] decOut, NxNOut;
-  mux2to1_3bit R1(LineIndex,input2, Hit, muxOut);
+  mux2to1_3bit R1(input2, LineIndex, Hit, muxOut);
   decoder_3to8 R2(muxOut, decOut);
   NxN_DFFs R3(clk, reset, decOut, NxNOut);
   priority_Encoder R4(NxNOut, LRUWay);
@@ -559,7 +561,7 @@ module encoder(input [7:0] e, output reg [2:0] way);
   always@(e)
   begin
        case(e)
-          8'b00000000 : way = 3'b000;
+          //8'b00000000 : way = 3'b000;
           8'b00000001 : way = 3'b000;
           8'b00000010 : way = 3'b001;
           8'b00000100 : way = 3'b010;
@@ -627,7 +629,7 @@ module check_invalid(input valid0, input valid1, input valid2, input valid3, inp
   end
 endmodule
 
-module topmodule(input clk,input reset,input [31:0]address,input read_signal,input write_signal,input [63:0]write_data,output read_hit, output write_hit, output [7:0]read_data);
+module topmodule(input clk,input reset,input [31:0]address,input read_signal,input write_signal,input [63:0]write_data,output read_hit, output write_hit, output [7:0]read_data, output hit, output halt_hit);
   
   wire[21:0] tag0,tag1,tag2,tag3,tag4,tag5,tag6,tag7;
   wire[7:0] decOut,way0_sig,way1_sig,way2_sig,way3_sig,way4_sig,way5_sig,way6_sig,way7_sig;
@@ -640,30 +642,30 @@ module topmodule(input clk,input reset,input [31:0]address,input read_signal,inp
   wire flag70, flag71, flag72,  flag73,  flag74,  flag75,  flag76,  flag77;
   wire flag0, flag1, flag2,  flag3,  flag4,  flag5,  flag6,  flag7;
   wire compOut0,compOut1,compOut2,compOut3,compOut4,compOut5,compOut6,compOut7;
+  wire halt_flag0, halt_flag1, halt_flag2, halt_flag3, halt_flag4, halt_flag5, halt_flag6, halt_flag7 ; 
   
    decoder_3to8 dec(address[5:3], decOut);                      //decOut will have the bit corresponding to the matched set as 1 while all would be 0.
    mux2to1_3bit r1( LRU_Way,invalid_way,lru_invalid,out1 );    //basically to choose which block to replace. In case of an invalid block, that will be chosen irrespective of what LRU_Square decides to replace.
    mux2to1_3bit r2( out1,line_index,write_hit,final_way );
    wr_enable_signals r3(decOut,final_way,hit,read_signal,way0_sig,way1_sig,way2_sig,way3_sig,way4_sig,way5_sig,way6_sig,way7_sig); //Generation of all 64 write_enables for all the 64 blocks (valid + tag + data).
    
-   way r4(clk,reset,way0_sig,address[31:10],write_data,address[5:3],valid0,tag0,data0);
-   way r5(clk,reset,way1_sig,address[31:10],write_data,address[5:3],valid1,tag1,data1);
-   way r6(clk,reset,way2_sig,address[31:10],write_data,address[5:3],valid2,tag2,data2);
-   way r7(clk,reset,way3_sig,address[31:10],write_data,address[5:3],valid3,tag3,data3);
-   way r8(clk,reset,way4_sig,address[31:10],write_data,address[5:3],valid4,tag4,data4);
-   way r9(clk,reset,way5_sig,address[31:10],write_data,address[5:3],valid5,tag5,data5); 
-   way r10(clk,reset,way6_sig,address[31:10],write_data,address[5:3],valid6,tag6,data6);
-   way r11(clk,reset,way7_sig,address[31:10],write_data,address[5:3],valid7,tag7,data7); 
+   way r4(clk,reset,way0_sig,1'b1,address[31:10],write_data,address[5:3],valid0,tag0,data0);
+   way r5(clk,reset,way1_sig,1'b1,address[31:10],write_data,address[5:3],valid1,tag1,data1);
+   way r6(clk,reset,way2_sig,1'b1,address[31:10],write_data,address[5:3],valid2,tag2,data2);
+   way r7(clk,reset,way3_sig,1'b1,address[31:10],write_data,address[5:3],valid3,tag3,data3);
+   way r8(clk,reset,way4_sig,1'b1,address[31:10],write_data,address[5:3],valid4,tag4,data4);
+   way r9(clk,reset,way5_sig,1'b1,address[31:10],write_data,address[5:3],valid5,tag5,data5); 
+   way r10(clk,reset,way6_sig,1'b1,address[31:10],write_data,address[5:3],valid6,tag6,data6);
+   way r11(clk,reset,way7_sig,1'b1,address[31:10],write_data,address[5:3],valid7,tag7,data7); 
    
-   
-   way_halting w1(clk, reset, way0_sig, address[9:6], address[9:6], flag00, flag01, flag02,  flag03,  flag04,  flag05,  flag06,  flag07);
-   way_halting w2(clk, reset, way1_sig, address[9:6], address[9:6], flag10, flag11, flag12,  flag13,  flag14,  flag15,  flag16,  flag17);
-   way_halting w3(clk, reset, way2_sig, address[9:6], address[9:6], flag20, flag21, flag22,  flag23,  flag24,  flag25,  flag26,  flag27);
-   way_halting w4(clk, reset, way3_sig, address[9:6], address[9:6], flag30, flag31, flag32,  flag33,  flag34,  flag35,  flag36,  flag37);
-   way_halting w5(clk, reset, way4_sig, address[9:6], address[9:6], flag40, flag41, flag42,  flag43,  flag44,  flag45,  flag46,  flag47);
-   way_halting w6(clk, reset, way5_sig, address[9:6], address[9:6], flag50, flag51, flag52,  flag53,  flag54,  flag55,  flag56,  flag57);
-   way_halting w7(clk, reset, way6_sig, address[9:6], address[9:6], flag60, flag61, flag62,  flag63,  flag64,  flag65,  flag66,  flag67);
-   way_halting w8(clk, reset, way7_sig, address[9:6], address[9:6], flag70, flag71, flag72,  flag73,  flag74,  flag75,  flag76,  flag77);
+   way_halting w1(clk, reset, way0_sig, address[9:6], address[9:6], flag00, flag01, flag02,  flag03,  flag04,  flag05,  flag06,  flag07, halt_flag0);
+   way_halting w2(clk, reset, way1_sig, address[9:6], address[9:6], flag10, flag11, flag12,  flag13,  flag14,  flag15,  flag16,  flag17, halt_flag1);
+   way_halting w3(clk, reset, way2_sig, address[9:6], address[9:6], flag20, flag21, flag22,  flag23,  flag24,  flag25,  flag26,  flag27, halt_flag2);
+   way_halting w4(clk, reset, way3_sig, address[9:6], address[9:6], flag30, flag31, flag32,  flag33,  flag34,  flag35,  flag36,  flag37, halt_flag3);
+   way_halting w5(clk, reset, way4_sig, address[9:6], address[9:6], flag40, flag41, flag42,  flag43,  flag44,  flag45,  flag46,  flag47, halt_flag4);
+   way_halting w6(clk, reset, way5_sig, address[9:6], address[9:6], flag50, flag51, flag52,  flag53,  flag54,  flag55,  flag56,  flag57, halt_flag5);
+   way_halting w7(clk, reset, way6_sig, address[9:6], address[9:6], flag60, flag61, flag62,  flag63,  flag64,  flag65,  flag66,  flag67, halt_flag6);
+   way_halting w8(clk, reset, way7_sig, address[9:6], address[9:6], flag70, flag71, flag72,  flag73,  flag74,  flag75,  flag76,  flag77, halt_flag7);
    
    mux8to1_1b m1( flag00&decOut[0], flag01&decOut[1], flag02&decOut[2],  flag03&decOut[3],  flag04&decOut[4],  flag05&decOut[5],  flag06&decOut[6],  flag07&decOut[7], address[5:3],flag0);
    mux8to1_1b m2( flag10&decOut[0], flag11&decOut[1], flag12&decOut[2],  flag13&decOut[3],  flag14&decOut[4],  flag15&decOut[5],  flag16&decOut[6],  flag17&decOut[7], address[5:3],flag1);
@@ -683,27 +685,33 @@ module topmodule(input clk,input reset,input [31:0]address,input read_signal,inp
    comparator_22b c7(tag6, address[31:10], flag6, compOut6);
    comparator_22b c8(tag7, address[31:10], flag7, compOut7);
    
+   
    assign hit = ((valid0&compOut0) | (valid1&compOut1) | (valid2&compOut2) | (valid3&compOut3) | (valid4&compOut4) | (valid5&compOut5) | (valid6&compOut6) | (valid7&compOut7));
    assign write_hit = hit & write_signal;
    assign read_hit = hit & read_signal;
+   assign halt_hit = (halt_flag0 | halt_flag1 | halt_flag2 | halt_flag3 | halt_flag4 | halt_flag5 | halt_flag6 | halt_flag7);  
+   
+   
    
    LRU_Square ls(line_index, out1, clk, reset, hit, LRU_Way); //A slight modification made in the usual implementation to consider the case when the recently placed block in case of a miss if an invalid block instead of what LRU_Square last chose.
-   data_read dr({(valid0&compOut0),(valid1&compOut1),(valid2&compOut2),(valid3&compOut3),(valid4&compOut4),(valid5&compOut5),(valid6&compOut6),(valid7&compOut7)}, hit, address[2:0], data0, data1, data2, data3, data4, data5, data6, data7, line_index, read_data);
+   data_read dr({(valid7&compOut7),(valid6&compOut6),(valid5&compOut5),(valid4&compOut4),(valid3&compOut3),(valid2&compOut2),(valid1&compOut1),(valid0&compOut0)}, hit, address[2:0], data0, data1, data2, data3, data4, data5, data6, data7, line_index, read_data);
    check_invalid chk(valid0, valid1, valid2, valid3, valid4, valid5, valid6, valid7, invalid_way, lru_invalid);
+   
    
  endmodule
  
  module testBenchCache;
    //Inputs to main module
+   
    reg clk, reset, read_signal, write_signal;
    reg[31:0] address ; 
    reg[63:0] data ;    
    
    //Outputs 
-   wire read_hit, write_hit ; 
+   wire read_hit, write_hit , hit , halt_hit; 
    wire [7:0] cacheOut ; 
    
-   topmodule uut(clk, reset, address, read_signal, write_signal, data, read_hit, write_hit, cacheOut);
+   topmodule uut(clk, reset, address, read_signal, write_signal, data, read_hit, write_hit, cacheOut, hit, halt_hit);
    
        always #5 clk = ~clk; 
   
@@ -713,79 +721,7 @@ module topmodule(input clk,input reset,input [31:0]address,input read_signal,inp
           clk = 1'b1 ; reset = 1'b1 ; address = 32'd0 ; read_signal = 0 ; write_signal = 0 ; data = 64'd0 ; 
           
           //Read - miss , tag = 7 , index = 0 , data = 8246 , written to set0, way0
-    #10   reset = 1'b0 ; address = 32'd448 ; read_signal = 1 ; write_signal = 0 ; data = 64'd8246 ;      
-      
-          //Read - miss , tag = 64 , index = 1 , data = 1597 , written to set1, way0
-    #10   address = 32'd4104 ; read_signal = 1 ; write_signal = 0 ; data = 64'd1597 ;
-    
-          //Read - miss , tag = 31  , index = 7 , data =  7454 , written to set7, way0
-    #10   address = 32'd2040 ; read_signal = 1 ; write_signal = 0 ; data = 64'd7454 ;
-    
-          //Read - miss , tag =  1 , index = 1 , data = 2013 , written to set1, way1
-    #10   address = 32'd72 ; read_signal = 1 ; write_signal = 0 ; data = 64'd2013 ;
-    
-          //Read - miss , tag =  3 , index = 0, data = 963 , written to set0, way1
-    #10   address = 32'd192 ; read_signal = 1 ; write_signal = 0 ; data = 64'd963 ;
-    
-          //Read - hit , tag =  64 , index = 7, data read from set7, way0
-    #10   address = 32'd2040 ; read_signal = 1 ; write_signal = 0 ; data = 64'd0 ;
-    
-          //Write- hit , tag =  1 , index = 1 data = 3214 , overwritten to set1, way1
-    #10   address = 32'd72 ; read_signal = 0 ; write_signal = 1 ; data = 64'd3214 ;
-    
-          //Read - miss , tag =  13 , index = 4, data = 1000 , written to set4, way0
-    #10   address = 32'd864 ; read_signal = 1 ; write_signal = 0 ; data = 64'd1000 ;
-    
-          //Write - miss , tag =  57 , index = 4, data = 2000 , over written to set4, way1
-    #10   address = 32'd3680 ; read_signal = 1 ; write_signal = 0 ; data = 64'd2000 ;
-    
-          //Read - miss , tag =  463 , index = 4, data = 3000 , written to set4, way2
-    #10   address = 32'd29964 ; read_signal = 1 ; write_signal = 0 ; data = 64'd3000 ;
-    
-          //Read - miss , tag =  896 , index = 4, data = 4000 , written to set4, way3
-    #10   address = 32'd57376 ; read_signal = 1 ; write_signal = 0 ; data = 64'd4000 ;
-        
-          //Read - hit , tag =  57 , index = 4, data = 2000 , read from set4, way1
-    #10   address = 32'd3680 ; read_signal = 1 ; write_signal = 0 ; data = 64'd0000 ;
-    
-          //Write- hit , tag =  463 , index = 4, data = 9876 , overwritten to se4, way2
-    #10   address = 32'd29964 ; read_signal = 0 ; write_signal = 1 ; data = 64'd3214 ;
-    
-          //Read - hit , tag =  3 , index = 0, data = 963 , read from set0, way1
-    #10   address = 32'd192 ; read_signal = 1 ; write_signal = 0 ; data = 64'd0000 ;
-    
-          //Read - miss , tag = 16  , index = 6, data = 741 , written to set6, way0
-    #10   address = 32'd1072 ; read_signal = 1 ; write_signal = 0 ; data = 64'd741 ;
-    
-          //Read - miss , tag = 24  , index = 6, data = 152 , written to set6, way1
-    #10   address = 32'd1584 ; read_signal = 1 ; write_signal = 0 ; data = 64'd152 ;
-    
-          //Read - miss , tag = 120  , index = 6, data = 123 , written to set6, way2
-    #10   address = 32'd7728 ; read_signal = 1 ; write_signal = 0 ; data = 64'd123 ;
-    
-          //Read - miss , tag = 71  , index = 6, data = 357 , written to set6, way3
-    #10   address = 32'd4592 ; read_signal = 1 ; write_signal = 0 ; data = 64'd357 ;
-      
-          //Read - miss , tag = 2  , index = 6, data = 159 , written to set6, way4
-    #10   address = 32'd176 ; read_signal = 1 ; write_signal = 0 ; data = 64'd159 ;
-    
-          //Read - hit , tag =  7 , index = 1, data read from set0, way0
-    #10   address = 32'd448 ; read_signal = 1 ; write_signal = 0 ; data = 64'd0 ;
-    
-          //Read - hit , tag = 120  , index = 6, data = 123 , read from set6, way2
-    #10   address = 32'd7728 ; read_signal = 1 ; write_signal = 0 ; data = 64'd0 ;
-    
-          //Read - miss , tag = 0  , index = 6, data = 245 , written to set6, way5
-    #10   address = 32'd48 ; read_signal = 1 ; write_signal = 0 ; data = 64'd245 ;
-    
-          //Read - miss , tag = 10  , index = 6, data = 852 , written to set6, way6
-    #10   address = 32'd688 ; read_signal = 1 ; write_signal = 0 ; data = 64'd852 ;
-    
-          //Read - miss , tag = 12  , index = 6, data = 917 , written to set6, way7
-    #10   address = 32'd816 ; read_signal = 1 ; write_signal = 0 ; data = 64'd917 ;
-    
-          //Read - hit , tag =  120 , index = 1, data read from set6, way2
-    #10   address = 32'd7728 ; read_signal = 1 ; write_signal = 0 ; data = 64'd0 ;
+    #12   reset = 1'b0 ; address = 32'd448 ; read_signal = 1 ; write_signal = 0 ; data = 64'd8246 ;      
           
     
     end
