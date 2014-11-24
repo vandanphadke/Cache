@@ -24,6 +24,19 @@ module D_FF_LRU(input clk, input set, input reset, output reg Q);
 	end
 endmodule
 
+module register3bit( 
+	input clk, 
+	input reset, 
+	input regWrite, 
+	input [2:0] writeData,
+	output [2:0] RegOut );
+	
+	D_ff d_ffh0(clk, reset, regWrite, writeData[0], RegOut[0]);
+	D_ff d_ffh1(clk, reset, regWrite, writeData[1], RegOut[1]);
+	D_ff d_ffh2(clk, reset, regWrite, writeData[2], RegOut[2]);
+
+endmodule
+
 module register4bit( 
 	input clk, 
 	input reset, 
@@ -646,7 +659,7 @@ module topmodule(input clk,input reset,input [31:0]address,input read_signal,inp
   
    decoder_3to8 dec(address[5:3], decOut);                      //decOut will have the bit corresponding to the matched set as 1 while all would be 0.
    mux2to1_3bit r1( LRU_Way,invalid_way,lru_invalid,out1 );    //basically to choose which block to replace. In case of an invalid block, that will be chosen irrespective of what LRU_Square decides to replace.
-   mux2to1_3bit r2( out1,line_index,write_hit,final_way );
+   mux2to1_3bit r2( out1,line_index,hit,final_way );
    wr_enable_signals r3(decOut,final_way,hit,read_signal,way0_sig,way1_sig,way2_sig,way3_sig,way4_sig,way5_sig,way6_sig,way7_sig); //Generation of all 64 write_enables for all the 64 blocks (valid + tag + data).
    
    way r4(clk,reset,way0_sig,1'b1,address[31:10],write_data,address[5:3],valid0,tag0,data0);
@@ -692,8 +705,8 @@ module topmodule(input clk,input reset,input [31:0]address,input read_signal,inp
    assign halt_hit = (halt_flag0 | halt_flag1 | halt_flag2 | halt_flag3 | halt_flag4 | halt_flag5 | halt_flag6 | halt_flag7);  
    
    
-   
    LRU_Square ls(line_index, out1, clk, reset, hit, LRU_Way); //A slight modification made in the usual implementation to consider the case when the recently placed block in case of a miss if an invalid block instead of what LRU_Square last chose.
+   
    data_read dr({(valid7&compOut7),(valid6&compOut6),(valid5&compOut5),(valid4&compOut4),(valid3&compOut3),(valid2&compOut2),(valid1&compOut1),(valid0&compOut0)}, hit, address[2:0], data0, data1, data2, data3, data4, data5, data6, data7, line_index, read_data);
    check_invalid chk(valid0, valid1, valid2, valid3, valid4, valid5, valid6, valid7, invalid_way, lru_invalid);
    
@@ -707,7 +720,7 @@ module topmodule(input clk,input reset,input [31:0]address,input read_signal,inp
    reg[31:0] address ; 
    reg[63:0] data ;    
    
-   //Outputs 
+   //Outputs
    wire read_hit, write_hit , hit , halt_hit; 
    wire [7:0] cacheOut ; 
    
@@ -721,8 +734,22 @@ module topmodule(input clk,input reset,input [31:0]address,input read_signal,inp
           clk = 1'b1 ; reset = 1'b1 ; address = 32'd0 ; read_signal = 0 ; write_signal = 0 ; data = 64'd0 ; 
           
           //Read - miss , tag = 7 , index = 0 , data = 8246 , written to set0, way0
-    #12   reset = 1'b0 ; address = 32'd448 ; read_signal = 1 ; write_signal = 0 ; data = 64'd8246 ;      
+    #12   reset = 1'b0 ; address = 32'd448 ; read_signal = 1 ; write_signal = 0 ; data = 64'd8246 ;
+    
+          //Read - miss , tag = 64 , index = 1 , data = 1597 , written to set1, way0
+    #10   address = 32'd4104 ; read_signal = 1 ; write_signal = 0 ; data = 64'd1597 ;
+    
+          //Read - miss , tag = 31  , index = 7 , data =  7454 , written to set7, way0
+    #10   address = 32'd2040 ; read_signal = 1 ; write_signal = 0 ; data = 64'd7454 ;      
           
+          //Read - hit , tag = 7    , index = 0 , data =  7454 , read by set7, way0
+    #10   address = 32'd448 ; read_signal = 1 ; write_signal = 0 ; data = 64'd0 ;
+    
+          //Read - miss , tag = 3  , index = 0 , data =  963 , written to set0, way1
+    #10   address = 32'd192 ; read_signal = 1 ; write_signal = 0 ; data = 64'd963 ;
+    
+          //Write - hit , tag = 31 , index = 7 , data = 789 overwritten to set7, way0
+    #10   address = 32'd2040 ; read_signal = 0 ; write_signal = 1 ; data = 64'd789 ; 
     
     end
    
